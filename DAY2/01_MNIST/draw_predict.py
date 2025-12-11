@@ -15,9 +15,12 @@ import torch.nn as nn
 import numpy as np
 import os
 
+# ============== 取得腳本所在目錄 ==============
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # ============== 設定區 ==============
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODEL_PATH = "./mnist_cnn.pth"
+MODEL_PATH = os.path.join(SCRIPT_DIR, "..", "models", "mnist_cnn.pth")
 
 # 畫布設定
 CANVAS_SIZE = 400       # 畫布大小

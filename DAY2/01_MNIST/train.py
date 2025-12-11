@@ -11,13 +11,19 @@ from torchvision import datasets, transforms
 import os
 import matplotlib.pyplot as plt
 
+# ============== 取得腳本所在目錄 (相對路徑基準) ==============
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # ============== 設定區 ==============
 BATCH_SIZE = 64          # 批次大小
 EPOCHS = 20              # 訓練輪數
 LEARNING_RATE = 0.001    # 學習率
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-DATA_DIR = "./data"      # 資料存放路徑
-MODEL_SAVE_PATH = "./mnist_cnn.pth"  # 模型儲存路徑
+
+# 相對路徑設定
+DATA_DIR = os.path.join(SCRIPT_DIR, "data")
+MODEL_DIR = os.path.join(SCRIPT_DIR, "..", "models")
+MODEL_SAVE_PATH = os.path.join(MODEL_DIR, "mnist_cnn.pth")
 
 # ============== 資料準備 ==============
 def get_data_loaders():
@@ -232,6 +238,9 @@ def main():
     print("=" * 50)
     print(f"使用裝置: {DEVICE}")
     print()
+
+    # 確保模型目錄存在
+    os.makedirs(MODEL_DIR, exist_ok=True)
 
     # 準備資料
     print("[1] 準備資料...")

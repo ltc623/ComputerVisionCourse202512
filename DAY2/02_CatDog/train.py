@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 import shutil
 
+# ============== 取得腳本所在目錄 (相對路徑基準) ==============
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # ============== 設定區 ==============
 BATCH_SIZE = 32          # 批次大小
 EPOCHS = 10              # 訓練輪數
@@ -22,8 +25,10 @@ IMAGE_SIZE = 224         # 影像大小 (配合預訓練模型)
 TRAIN_SPLIT = 0.8        # 訓練集比例
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-DATA_DIR = "./data"                    # 資料目錄
-MODEL_SAVE_PATH = "./catdog_model.pth" # 模型儲存路徑
+# 相對路徑設定
+DATA_DIR = os.path.join(SCRIPT_DIR, "data")
+MODEL_DIR = os.path.join(SCRIPT_DIR, "..", "models")
+MODEL_SAVE_PATH = os.path.join(MODEL_DIR, "catdog_model.pth")
 USE_PRETRAINED = True                  # 是否使用預訓練模型
 
 
@@ -329,6 +334,9 @@ def main():
     print(f"使用裝置: {DEVICE}")
     print(f"使用預訓練模型: {USE_PRETRAINED}")
     print()
+
+    # 確保模型目錄存在
+    os.makedirs(MODEL_DIR, exist_ok=True)
 
     # 檢查資料
     print("[1] 檢查資料目錄...")

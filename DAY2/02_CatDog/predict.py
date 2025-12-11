@@ -11,10 +11,13 @@ import matplotlib.pyplot as plt
 import argparse
 import os
 
+# ============== 取得腳本所在目錄 ==============
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # ============== 設定區 ==============
 IMAGE_SIZE = 224
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODEL_PATH = "./catdog_model.pth"
+MODEL_PATH = os.path.join(SCRIPT_DIR, "..", "models", "catdog_model.pth")
 
 
 # ============== 模型定義 ==============

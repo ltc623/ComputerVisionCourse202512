@@ -57,6 +57,10 @@ if torch.cuda.is_available():
 DAY2/
 ├── requirements.txt         # Python 相依套件
 ├── README.md               # 本說明文件
+├── models/                  # 模型儲存目錄 (gitignore)
+│   ├── mnist_cnn.pth       # MNIST 模型
+│   ├── catdog_model.pth    # 貓狗分類模型
+│   └── coin_classifier.pth # 硬幣分類模型
 ├── 01_MNIST/               # MNIST 手寫數字辨識
 │   ├── train.py           # 訓練腳本
 │   ├── predict.py         # 預測腳本
@@ -66,8 +70,15 @@ DAY2/
 │   ├── train.py           # 訓練腳本
 │   ├── predict.py         # 預測腳本
 │   └── download_sample_data.py  # 資料準備工具
-└── 03_Custom/              # 自訂義分類器 (預留)
+└── 03_Custom/              # 自訂義分類器
+    ├── train_coin.py       # 硬幣正反面訓練腳本
+    ├── predict_coin.py     # 硬幣預測腳本
+    └── dataset/            # 資料集目錄 (gitignore)
+        ├── heads/          # 硬幣正面圖片
+        └── tails/          # 硬幣反面圖片
 ```
+
+**注意**: `models/` 和 `dataset/` 目錄已加入 `.gitignore`，不會上傳至 GitHub。
 
 ---
 
@@ -283,9 +294,90 @@ SimpleCNN
 
 ---
 
-## 範例三：自訂義分類器 (預留)
+## 範例三：硬幣正反面分類器
 
-此部分將在後續課程中實作，用於自訂類別的圖片分類任務。
+### 簡介
+
+使用自訂資料集訓練硬幣正反面 (Heads/Tails) 分類器。程式會自動處理不同大小的圖片並切分訓練/驗證集。
+
+### 資料準備
+
+#### 步驟 1：建立資料夾結構
+```bash
+cd DAY2/03_Custom
+```
+
+程式會自動建立以下目錄結構：
+```
+03_Custom/
+└── dataset/
+    ├── heads/    # 放入硬幣正面圖片
+    └── tails/    # 放入硬幣反面圖片
+```
+
+#### 步驟 2：放入圖片
+
+- 將硬幣**正面**圖片放入 `dataset/heads/` 資料夾
+- 將硬幣**反面**圖片放入 `dataset/tails/` 資料夾
+- 支援格式：`.jpg`, `.jpeg`, `.png`, `.bmp`, `.tif`
+- 圖片大小不限，程式會自動調整
+
+**建議**：每類至少準備 20 張以上圖片
+
+### 操作步驟
+
+#### 步驟 1：訓練模型
+```bash
+cd DAY2/03_Custom
+python train_coin.py
+```
+
+程式會自動：
+1. 載入所有圖片並統一調整大小
+2. 隨機切分 80% 訓練集 / 20% 驗證集
+3. 套用資料增強（翻轉、旋轉、色彩調整）
+4. 訓練 CNN 模型
+5. 儲存最佳模型至 `models/coin_classifier.pth`
+
+#### 步驟 2：預測單張圖片
+```bash
+python predict_coin.py --image path/to/coin.jpg
+```
+
+#### 步驟 3：批次預測
+```bash
+python predict_coin.py --folder path/to/images/
+```
+
+### 模型架構
+
+```
+CoinCNN
+├── Conv Block 1: Conv2d(3, 32) + BN + ReLU + Pool
+├── Conv Block 2: Conv2d(32, 64) + BN + ReLU + Pool
+├── Conv Block 3: Conv2d(64, 128) + BN + ReLU + Pool
+├── Conv Block 4: Conv2d(128, 256) + BN + ReLU + Pool
+├── Conv Block 5: Conv2d(256, 512) + BN + ReLU + Pool
+├── Global Average Pooling
+├── Linear(512, 256) + ReLU + Dropout
+└── Linear(256, 2)
+```
+
+### 資料增強策略
+
+訓練時會自動套用以下資料增強：
+- 隨機裁切
+- 水平/垂直翻轉
+- 旋轉 (±30°)
+- 色彩抖動
+
+### 輸出檔案
+
+| 檔案 | 說明 |
+|------|------|
+| `models/coin_classifier.pth` | 訓練好的模型 |
+| `training_history.png` | 訓練曲線 |
+| `prediction_samples.png` | 預測範例 |
 
 ---
 
